@@ -2,6 +2,7 @@ import os
 import shutil
 from PIL import Image
 import json
+
 data = {
     "info": {
         "year": "2021",
@@ -19,22 +20,14 @@ data = {
         },
     ],
     "categories": [
-
-        {
-
-        },
     ],
     "images": [
-        {
-
-        },
     ],
     "annotations": [
-        {
-        
-        },
     ]
 }
+
+next_image_id = 1
 
 
 def process(value):
@@ -72,59 +65,80 @@ def combine_to_dir(path=None, new_path=None):
         images = os.listdir(f'{path}/{folder}')
         for image in images:
             new_image = f'{folder}{image}'
-            shutil.move(f'{path}/{folder}/{image}', f'{new_path}/{new_image}')
+            shutil.copy(f'{path}/{folder}/{image}', f'{new_path}/{new_image}')
+
+
+# Convert to coco
+# Get all annotation files names
+# For each annotation file name
+#   Get a list of all images which start with the file name
+#   Read the annotation file
+#   for each line in annotation file
+#     get or create image in coco dict and return it's id
+#     insert annotation and increment id
+
+
+def get_or_create_image(image_path):
+    image_data_list = list(filter(lambda image_data: image_data.get("file_name", "") == image_path, data["images"]))
+    if image_data_list:
+        return image_data_list[0]["id"]
+    image = Image.open(image_path)
+    width, height = image.size
+    global next_image_id
+    data["images"].append({
+        "id": next_image_id,
+        "license": 1,
+        "file_name": image_path,
+        "height": height,
+        "width": width,
+        "date_captured": None
+    })
+    image_id = next_image_id
+    next_image_id += 1
+    return image_id
 
 
 def make_coco(images_path=None, annotations_path=None):
     images_path = 'D:/images'
-    annotations_path = 'D:/VisDrone2019-MOT/VisDrone2019-MOT-train/VisDrone2019-MOT-train/annotations'
+    annotations_path = r'D:\MHA\SLS\References\Python\to-coco-converter\data\annotations'
     annotations_list = os.listdir(annotations_path)
     images_list = os.listdir(images_path)
     for annotation in annotations_list:
         annotation_file = open(f'{annotations_path}/{annotation}', 'r')
         lines_pre = annotation_file.read()
         lines = lines_pre.split('\n')
-        for image in images_list:
-            if image[:18] == annotation[:18]:
-                im = Image.open(f'{images_path}/{image}')
-                width, height = im.size
-                image_row = image[19:].lstrip('0').replace('.jpg','')
-                ss = lines
-                for line in ss:
-                    line = line.split(',')
-                    if line[0] == image_row:
-                        if line[6] == 0 :
-                            continue
-                        else:
-                            target_id = line[1]
-                            bboxes = [line[2], line[3], line[4], line[5]]
-                            category = line[7]
-                            data["images"].append({
-                                "id": image_row,
-                                "license": 1,
-                                "file_name": f'{images_path}/{image}',
-                                "height": height,
-                                "width": width,
-                                "date_captured": None
-                            })
-                            data["annotations"].append({
-                                "id": target_id,
-                                "image_id": image_row,
-                                "category_id": None,
-                                "bbox": bboxes,
-                                "segmentation": [],
-                                "area": None,
-                                "iscrowd": None
-                            })
-                            data["categories"].append({
-                                "id": category,
-                                "name": process(category),
-                                "supercategory": None
-                            })
+        annotation_images = list(filter(lambda name: name.startswith(annotation[:-4]), images_list))
+        for line in lines:
+            line = line.split(',')
+            if len(line) < 6:
+                break
+            if line[6] == 0 or line[6] == '0':
+                continue
+            image_name = list(filter(lambda name: name.endswith(line[0] + ".jpg"), annotation_images))[0]
+            image_path = f'{images_path}/{image_name}'
+            image_id = get_or_create_image(image_path)
+            target_id = int(line[1])
+            bboxes = [float(line[2]), float(line[3]), float(line[4]), float(line[5])]
+            category = int(line[7])
+            data["annotations"].append({
+                "id": target_id,
+                "image_id": image_id,
+                "category_id": category,
+                "bbox": bboxes,
+                "segmentation": [],
+                "area": None,
+                "iscrowd": None
+            })
+            # TODO: check if category is already here
+            # data["categories"].append({
+            #     "id": category,
+            #     "name": process(category),
+            #     "supercategory": None
+            # })
     with open("data_file.json", "w") as write_file:
         json.dump(data, write_file)
 
 
 if __name__ == '__main__':
-    #combine_to_dir()
+    # combine_to_dir()
     make_coco()
