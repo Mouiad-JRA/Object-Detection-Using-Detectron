@@ -2,7 +2,7 @@ import os
 import shutil
 from PIL import Image
 import json
-
+from check import check
 data = {
     "info": {
         "year": "2021",
@@ -149,4 +149,5 @@ def make_coco(images_path=None, annotations_path=None):
 
 if __name__ == '__main__':
     # combine_to_dir()
-    make_coco()
+    # make_coco()
+    check()
