@@ -26,3 +26,29 @@ def check():
                         image_res = cv2.rectangle(cv2.imread('result//'+image), start, end, color, thickness)
                         cv2.imshow(f'{image}', image_res)
                         cv2.waitKey()
+
+def draw():
+    path = 'result/'
+    annotations = 'annotations/'
+    content = os.listdir(path)
+    annotations = os.listdir(annotations)
+    for image in content:
+        for anno in annotations:
+            if image[:-13]==anno[:-6]:
+                with open('annotations/'+anno,'r') as current:
+                    lines = current.readlines()
+                    for line in lines:
+                        line = line.split(',')
+                        image_id = image[-11:-4].lstrip('0')
+                        if image_id==line[0] and line[6]!='0':
+                            start = (int(line[2]), int(line[3]))
+                            end = (int(line[4]), int(line[5]))
+                            color = (255, 0, 0)
+                            thickness = 1
+                            image_res = cv2.rectangle(cv2.imread('result//' + image), start, end, color, thickness)
+                            cv2.imshow(f'{line}', image_res)
+                            cv2.waitKey()
+
+
+
+

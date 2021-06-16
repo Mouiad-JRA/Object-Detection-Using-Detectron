@@ -2,7 +2,7 @@ import os
 import shutil
 from PIL import Image
 import json
-from check import check
+from check import check , draw
 data = {
     "info": {
         "year": "2021",
@@ -151,3 +151,4 @@ if __name__ == '__main__':
     # combine_to_dir()
     # make_coco()
     check()
+    # draw()
