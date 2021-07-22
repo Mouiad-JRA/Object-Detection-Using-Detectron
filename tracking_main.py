@@ -1,10 +1,12 @@
 import cv2
 import glob
+import numpy as np
 from kalman import KalmanFilter
 from detector import detect
 # Create KalmanFilter object KF
 # KalmanFilter(dt, u_x, u_y, std_acc, x_std_meas, y_std_meas)
-KF = KalmanFilter(0.1, 1, 1, 1, 0.1, 0.1)
+#todo: adjust the paramaters to get optimal result and make training on good iterations
+KF = KalmanFilter(0.1, 1.5, 1, 0.5, 0.0, 0.0)
 # Create opencv video capture object
 frames = glob.glob('MM/*.jpg')
 base = 'MM/0000001.jpg'
@@ -61,6 +63,5 @@ for frame in frames:
     cv2_imshow(frame)
     counter += 1
     if cv2.waitKey(2) & 0xFF == ord('q'):
-        VideoCap.release()
         cv2.destroyAllWindows()
         break
