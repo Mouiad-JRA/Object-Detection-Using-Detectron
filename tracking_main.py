@@ -36,13 +36,13 @@ for frame in frames:
             x1, y1 = (x1, y1)
             updated.append(np.array([[float(x1)], [float(y1)]]))
             predicted.append(np.array([[float(x)], [float(y)]]))
-        print("predicted", predicted)
-        print("updated", updated)
+        # print("predicted", predicted)
+        # print("updated", updated)
 
     else:
         for point in range(len(predicted)):
             (x, y) = KF.predict()
-            print(updated[point])
+            # print(updated[point])
             (x1, y1) = KF.update(updated[point])
             predicted[point] = np.array([[float(x)], [float(y)]])
             updated[point] = np.array([[float(x1)], [float(y1)]])
