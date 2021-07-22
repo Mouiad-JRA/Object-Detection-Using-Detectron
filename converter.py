@@ -40,6 +40,8 @@ data = {
     ]
 }
 
+images = dict()
+
 next_image_id = 1
 
 
@@ -92,21 +94,26 @@ def combine_to_dir(path=None, new_path=None):
 
 
 def get_or_create_image(image_path):
-    image_data_list = list(filter(lambda image_data: image_data.get("file_name", "") == image_path, data["images"]))
-    if image_data_list:
-        return image_data_list[0]["id"]
+    global images
+    image = images.get(image_path, None)
+    if image:
+        return image
+    
     image = Image.open(image_path)
     width, height = image.size
     global next_image_id
+    
+    image_id = next_image_id
     data["images"].append({
-        "id": next_image_id,
+        "id": image_id,
         "license": 1,
         "file_name": image_path,
         "height": height,
         "width": width,
         "date_captured": None
     })
-    image_id = next_image_id
+    
+    images[image_path] = image_id
     next_image_id += 1
     return image_id
 
