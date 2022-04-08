@@ -29,7 +29,7 @@ Inference & Evaluation on First Dataset
 We used Google Collab to work with Detectron2, after the successful installation, we used the transfer learning pre-trained approach, it's provided by Detectron2 and we used it in training our dataset.
 <br/>  
 The measure that we used is AP (Average Precision) in order to compare the results for each model.
-<img src="image1.png" width="500">
+<img src="Readme/image1.png" width="500">
 From the results, we find that the best performance (for the dataset that we have) is:
 1) retinanet_R_101_FPN_3x
 2) faster_rcnn_X_101_32x8d_FPN_3x
@@ -40,7 +40,7 @@ They got the highest results therefore we used them for the second dataset.
 
 Now for the Second Dataset, we used the Visdrone data http://aiskyeye.com/download/multi-object-tracking_2021/
 For Inference and Evaluation on Second Dataset, we used the previous models and the results were.
-<img src="image2.png" width="500">
+<img src="Readme/image2.png" width="500">
 <br/> 
 From the previous results, it can be said that for visdrone dataset, we find that using the retinanet model is better than the faster-rcnn model.
 we compared the performance of previous models between NCS2 VPU and CPU.
@@ -50,7 +50,7 @@ The steps for preparing models for comparison were as follows:
 2) Convert the previous output from onnx to the openvino pattern which is called IR.
 3) in order to compare the models on both the CPU & VPU, we used Benchmark Python. 
 <br/>
-<img src="image3.png" width="500">
+<img src="Readme/image3.png" width="500">
 <br/>
 The results clearly show that the second model Retinanet gives more promising results than the Faster R-CNN model on the Visdrone dataset.
 Deploying a model on a VPU is stronger and faster than deploying on a CPU and it is preferred to use because when we used the VPU on the second model the Latency was 42.78 ms which is lower than the Latency when we used CPU 90.46 ms and the Throughput was on vpu 93.03 FPS but on CPU 42.74 therefore, it is preferable to use the VPU as hardware.
